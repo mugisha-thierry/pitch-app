@@ -1,11 +1,13 @@
 from flask import render_template,request,redirect,url_for,abort
-from ..models import User
+from ..models import User,Pitch,Comment
 from . import main
 from flask_login import login_required
 from .forms import UpdateProfile
 from .. import db,photos
+from .forms import PitchForm
+from flask_login import current_user
 # from ..requests import get_news_source,get_news_article
-# from .forms import ReviewForm
+
 # from ..models import Article,News
 
 # Views
@@ -53,3 +55,42 @@ def update_profile(uname):
         return redirect(url_for('.profile',uname=user.username))
 
     return render_template('profile/update.html',form =form)    
+
+
+@main.route('/new_pitch', methods = ['POST','GET'])
+@login_required
+def add_pitch():
+    form = PitchForm()
+    if form.validate_on_submit():
+        title = form.title.data
+        pitch = form.pitch.data
+        category = form.category.data
+        user_id = current_user
+        
+        
+        if form.validate_on_submit():
+            new_pitch = Pitch(pitch=pitch,user_id=current_user._get_current_object().id,category=category,title=title)
+            db.session.add(new_pitch)
+            db.session.commit()
+        
+        return redirect(url_for('main.index'))
+        
+    return render_template('pitch.html', form = form)    
+
+
+@main.route('/comment/<int:pitch_id>', methods = ['POST','GET'])
+@login_required
+def comment(pitch_id):
+    form = CommentForm()
+    pitch = Pitch.query.get(pitch_id)
+    all_comments = Comment.query.filter_by(pitch_id = pitch_id).all()
+    if form.validate_on_submit():
+        comment = form.comment.data 
+        pitch_id = pitch_id
+        user_id = current_user._get_current_object().id
+        new_comment = Comment(comment = comment,user_id = user_id,pitch_id = pitch_id)
+        
+        db.session.add(new_comment)
+        db.session.commit()
+        return redirect(url_for('.comment', pitch_id = pitch_id))
+    return render_template('comment.html', form =form, pitch = pitch,all_comments=all_comments)    
