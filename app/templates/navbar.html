@@ -11,25 +11,23 @@
           <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
         </li>
       </ul>
-      <form class="form-inline my-2 my-lg-0">
+      <form class="form-inline my-2 my-lg-0"></form>
 
 
 
         {% if current_user.is_authenticated %}
-        <li style="color:blue;">{{current_user.username}}</li>
-        <li><a href="{{url_for('main.profile',uname=current_user.username)}}">Profile</a></li>
-        <li><a href="{{url_for('auth.logout')}}">Sign out</a></li>
+
+        
+        <li class="text-center" style="color:black; font-weight: bolder;">{{current_user.username}}</li>
+        <a class="btn btn-outline-primary my-2 my-sm-0" href="{{url_for('main.profile',uname=current_user.username)}}">Profile</a>
+        <a class="btn btn-outline-primary my-2 my-sm-0" href="{{url_for('main.add_pitch')}}">Create Pitch</a>
+        <a class="btn btn-outline-primary my-2 my-sm-0" href="{{url_for('auth.logout')}}">Sign out</a>
         {% else %}
-        <li><a href="{{url_for('auth.login')}}">Sign in</a></li>
-        <li><a href="{{url_for('auth.register')}}">Sign up</a></li>
+        <a class="btn btn-outline-primary my-2 my-sm-0" href="{{url_for('auth.login')}}">Sign in</a>
+        <a class="btn btn-outline-primary my-2 my-sm-0" href="{{url_for('auth.register')}}">Sign up</a>
+        <a class="btn btn-outline-primary my-2 my-sm-0" href="{{url_for('main.add_pitch')}}">Create Pitch</a>
         {%endif%}
 
-
-
-        <a class="btn btn-outline-success my-2 my-sm-0" href="https://github.com/"><i class="fab fa-github"></i></a>
-        <a class="btn btn-outline-success my-2 my-sm-0" href="https://www.instagram.com/"><i class="fab fa-instagram"></i></a>
-        <a class="btn btn-outline-success my-2 my-sm-0" href="#"><i class="fas fa-mail-bulk"></i></a>
-        <a class="btn btn-outline-success my-2 my-sm-0" href="https://www.instagram.com/"><i class="fas fa-address-card"></i></a>
       </form>
     </div>
   </nav>
