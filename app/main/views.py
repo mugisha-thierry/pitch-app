@@ -1,19 +1,21 @@
 from flask import render_template,request,redirect,url_for,abort
-from ..models import User,Pitch,Comment
+from ..models import User,Pitch,Comment,Upvote,Downvote
 from . import main
 from flask_login import login_required
 from .forms import UpdateProfile
 from .. import db,photos
-from .forms import PitchForm
+from .forms import PitchForm,CommentForm
 from flask_login import current_user
-# from ..requests import get_news_source,get_news_article
-
-# from ..models import Article,News
 
 # Views
 @main.route('/')
 def index():
-    return render_template('index.html')
+    pitch = Pitch.query.all()
+    hobbies = Pitch.query.filter_by(category = 'Hobbies').all() 
+    experiences = Pitch.query.filter_by(category = 'Experiences').all()
+    skills = Pitch.query.filter_by(category = 'Skills').all()
+    title ='Pitch'
+    return render_template('index.html', hobbies = hobbies, experiences = experiences, pitch = pitch, skills= skills, title=title)
 
 @main.route('/user/<uname>')
 def profile(uname):
@@ -93,4 +95,44 @@ def comment(pitch_id):
         db.session.add(new_comment)
         db.session.commit()
         return redirect(url_for('.comment', pitch_id = pitch_id))
-    return render_template('comment.html', form =form, pitch = pitch,all_comments=all_comments)    
+    return render_template('comment.html', form =form, pitch = pitch,all_comments=all_comments) 
+
+
+
+@main.route('/upvote/<int:id>',methods = ['POST','GET'])
+@login_required
+def like(id):
+    pitches = Upvote.get_upvotes(id)
+    valid_string = f'{current_user.id}:{id}'
+    for pitch in pitches:
+        to_str = f'{pitch}'
+        print(valid_string+" "+to_str)
+        if valid_string == to_str:
+            return redirect(url_for('main.index',id=id))
+        else:
+            continue
+    new_upvote = Upvote(user = current_user, pitch_id=id)
+
+    db.session.add(new_upvote)
+    db.session.commit()
+
+    return redirect(url_for('main.index',id=id))
+
+@main.route('/downvote/<int:id>',methods = ['POST','GET'])
+@login_required
+def dislike(id):
+    pitches = Downvote.get_downvotes(id)
+    valid_string = f'{current_user.id}:{id}'
+    for pitch in pitches:
+        to_str = f'{p}'
+        print(valid_string+" "+to_str)
+        if valid_string == to_str:
+            return redirect(url_for('main.index',id=id))
+        else:
+            continue
+    new_downvote = Downvote(user = current_user, pitch_id=id)
+
+    db.session.add(new_downvote)
+    db.session.commit()
+    
+    return redirect(url_for('main.index',id = id))
