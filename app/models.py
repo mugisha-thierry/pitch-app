@@ -19,6 +19,8 @@ class User(UserMixin,db.Model):
     profile_pic_path = db.Column(db.String())
     pitch = db.relationship('Pitch', backref='user', lazy='dynamic')
     comment = db.relationship('Comment', backref='user', lazy='dynamic')
+    upvote = db.relationship('Upvote',backref='user',lazy='dynamic')
+    downvote = db.relationship('Downvote',backref='user',lazy='dynamic')
 
 
     @property
@@ -52,6 +54,8 @@ class Pitch(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     time = db.Column(db.DateTime, default = datetime.utcnow)
     comment = db.relationship('Comment',backref='pitch',lazy='dynamic')
+    upvote = db.relationship('Upvote',backref='pitch',lazy='dynamic')
+    downvote = db.relationship('Downvote',backref='pitch',lazy='dynamic')
 
 
     def __repr__(self):
@@ -76,3 +80,40 @@ class Comment(db.Model):
 
     def __repr__(self):
         return f'comment:{self.comment}'
+
+
+
+
+class Upvote(db.Model):
+    __tablename__ = 'upvotes'
+
+    id = db.Column(db.Integer,primary_key=True)
+    user_id = db.Column(db.Integer,db.ForeignKey('users.id'))
+    pitch_id = db.Column(db.Integer,db.ForeignKey('pitches.id'))
+
+    @classmethod
+    def get_upvotes(cls,id):
+        upvote = Upvote.query.filter_by(pitch_id=id).all()
+        return upvote
+
+
+    def __repr__(self):
+        return f'{self.user_id}:{self.pitch_id}'
+
+        
+class Downvote(db.Model):
+    __tablename__ = 'downvotes'
+
+    id = db.Column(db.Integer,primary_key=True)
+    user_id = db.Column(db.Integer,db.ForeignKey('users.id'))
+    pitch_id = db.Column(db.Integer,db.ForeignKey('pitches.id'))
+    
+
+
+    @classmethod
+    def get_downvotes(cls,id):
+        downvote = Downvote.query.filter_by(pitch_id=id).all()
+        return downvote
+
+    def __repr__(self):
+        return f'{self.user_id}:{self.pitch_id}'
