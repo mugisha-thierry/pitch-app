@@ -2,7 +2,7 @@
 ---
 This app allows a user to create their pitches and read other people's pitches. They can comment, upvote,downvote on pitches and they can create their account. 
 ---
-![]()
+![](https://res.cloudinary.com/mugisha-thierry/image/upload/v1607340178/screenshoot_pitch_pq4rzr.png)
 ## Author
 Mugisha Thierry student from Moringa School
 ---
